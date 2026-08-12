@@ -1,0 +1,93 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "elvesora/allocora-laravel",
+    "description": "Self-contained Laravel client for the Allocora public API.",
+    "type": "library",
+    "keywords": [
+        "allocora",
+        "api",
+        "laravel",
+        "php",
+        "royalties"
+    ],
+    "homepage": "https://www.allocora.com",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Elvesora",
+            "homepage": "https://www.allocora.com"
+        }
+    ],
+    "support": {
+        "docs": "https://www.allocora.com/docs",
+        "issues": "https://github.com/Elvesora/allocora-laravel/issues",
+        "source": "https://github.com/Elvesora/allocora-laravel"
+    },
+    "require": {
+        "php": "^8.2",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "illuminate/http": "^12.0 || ^13.0",
+        "illuminate/support": "^12.0 || ^13.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.29",
+        "orchestra/testbench": "^10.0 || ^11.0",
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^11.5 || ^12.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Elvesora\\Allocora\\Laravel\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Elvesora\\Allocora\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --no-progress",
+        "format": "pint",
+        "format-test": "pint --test",
+        "validate-package": "@composer validate --strict",
+        "security-audit": "@composer audit --no-interaction",
+        "check": [
+            "@validate-package",
+            "@format-test",
+            "@test",
+            "@analyse",
+            "@security-audit"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Elvesora\\Allocora\\Laravel\\AllocoraServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "allow-plugins": false,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "archive": {
+        "exclude": [
+            "/.github",
+            "/.git",
+            "/.phpstan.cache",
+            "/.phpunit.cache",
+            "/build",
+            "/composer.lock",
+            "/dist",
+            "/phpstan.neon.dist",
+            "/phpunit.xml.dist",
+            "/pint.json",
+            "/tests",
+            "/vendor"
+        ]
+    }
+}

@@ -130,6 +130,22 @@ $allocora->rules()->toggleStatus($id);
 $allocora->rules()->versions($id);
 ```
 
+### Retail-price (RRP) rule allocations
+
+A flat allocation can calculate its royalty on the retail price instead of actual receipts. Rule reads (`show`, `list`, `versions`) return the stored allocation keys unchanged:
+
+```php
+foreach ($allocora->rules()->show($id)->data()['allocations'] as $allocation) {
+    $basis = $allocation['royalty_basis'] ?? 'receipts'; // a missing key means actual receipts
+    $source = $allocation['rrp_source'] ?? null;          // 'file' or 'product_history' when $basis is 'rrp'
+    $rate = $allocation['percentage'];                    // for 'rrp': percent of units × retail price, not of receipts
+}
+```
+
+Treat any other `royalty_basis` value as unknown rather than as receipts. Retail-price allocations are created and changed in the Allocora workspace rule editor. Through the API you can rename a rule, change its status, or toggle it; send only the fields you change, for example `$allocora->rules()->update($id, ['name' => 'Retail royalty 2027'])`.
+
+The API returns `422` (`ValidationException`) and creates no rule version when a write sends `royalty_basis` or `rrp_source` in an allocation, or sends `allocations` or `allocation_type` for a rule that uses the retail-price basis — including the allocations you just read. Do not retry such a request; change the allocation in the workspace instead.
+
 Revenue records have no update or delete methods. Correct an error through Allocora's documented refund or adjustment model. Product archival changes status rather than deleting financial history.
 
 Revenue listing alone is paginated. It accepts `page`, `per_page` (default 25, maximum 100), `type`, `revenue_source_id`, `currency`, `date_from`, `date_to`, and `search`; pagination details are returned in `meta()` as `current_page`, `last_page`, `per_page`, and `total`.

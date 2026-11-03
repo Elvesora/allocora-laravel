@@ -72,6 +72,28 @@ final class ErrorHandlingTest extends TestCase
         }
     }
 
+    public function test_retail_price_rule_write_refusal_is_one_validation_exception_without_retry(): void
+    {
+        $refusal = 'This rule uses the retail-price (RRP) royalty basis. Change its allocations in the Allocora workspace rule editor.';
+        Http::preventStrayRequests();
+        Http::fake([
+            '*' => Http::response(['message' => $refusal, 'errors' => ['allocations' => [$refusal]]], 422),
+        ]);
+
+        try {
+            $this->app->make(Client::class)->rules()->update(self::RESOURCE_ID, [
+                'allocations' => [['payee_id' => '22222222-2222-4222-8222-222222222222', 'percentage' => 10, 'royalty_basis' => 'rrp', 'rrp_source' => 'file']],
+            ]);
+            self::fail('Expected a validation exception.');
+        } catch (ValidationException $exception) {
+            self::assertSame(422, $exception->statusCode);
+            self::assertSame('VALIDATION_ERROR', $exception->errorCode);
+            self::assertSame('The Allocora API rejected the request data.', $exception->getMessage());
+        }
+
+        Http::assertSentCount(1);
+    }
+
     public function test_upstream_error_details_never_escape_exception_surfaces(): void
     {
         $previous = ini_set('zend.exception_ignore_args', '0');
